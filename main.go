@@ -1,52 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
+	"log"
+
+	"github.com/paulcalimache/gourl/internal/db"
+	"github.com/paulcalimache/gourl/internal/healthcheck"
+	"github.com/paulcalimache/gourl/internal/middleware"
+	"github.com/paulcalimache/gourl/internal/model"
+	s "github.com/paulcalimache/gourl/internal/shortener"
+
 	"github.com/gorilla/mux"
-	"github.com/rs/zerolog/log"
 )
 
-type Shortener struct {
-	urls map[string]string
-}
-
-func (s *Shortener) shortenURL(w http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		w.Write([]byte(fmt.Sprint(http.StatusBadRequest) + " - Bad request"))
-		return
-	}
-	shortURL := req.FormValue("short_url")
-	if _, exist := s.urls[shortURL]; exist {
-		w.Write([]byte(fmt.Sprint(http.StatusForbidden) + " - Short URL path already exist, please use another one."))
-		return
-	}
-	s.urls[shortURL] = req.FormValue("url")
-	log.Info().Msgf("URL %s shortened", req.FormValue("url"))
-	http.Redirect(w, req, "/", http.StatusMovedPermanently)
-}
-
-func (s *Shortener) handleRequest(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	url, exist := s.urls[vars["key"]]
-	if !exist {
-		log.Info().Msgf("URL %s doesn't exist", vars["key"])
-		http.Redirect(w, req, "/", http.StatusMovedPermanently)
-		return
-	}
-	log.Info().Msgf("Redirect to url: %s", url)
-	http.Redirect(w, req, url, http.StatusMovedPermanently)
-}
-
 func main() {
-	s := Shortener{make(map[string]string)}
+	mongo := db.NewMongoDB()
+	shortener := s.NewShortener(mongo)
 	r := mux.NewRouter()
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
-	r.Handle("/", http.FileServer(http.Dir("./static/")))
-	r.HandleFunc("/shorten", s.shortenURL)
-	r.HandleFunc("/{key}", s.handleRequest)
+	// Healthcheck endpoints
+	r.Methods(http.MethodGet).Path("/healthz").HandlerFunc(healthcheck.Healthz)
+	r.Methods(http.MethodGet).Path("/readyz").HandlerFunc(healthcheck.Readyz)
 
-	http.Handle("/", r)
-	http.ListenAndServe(":8080", nil)
+	r.Methods(http.MethodPost).Path("/shorten").HandlerFunc(shortener.Shorten)
+	r.Methods(http.MethodGet).Path("/").HandlerFunc(model.RenderHomePage)
+
+	r.Methods(http.MethodGet).Path("/{key}").HandlerFunc(shortener.Redirect)
+
+	r.Use(middleware.LoggingMiddleware)
+
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

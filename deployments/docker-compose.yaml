@@ -1,0 +1,17 @@
+services:
+  go-url:
+    build:
+      context: .. 
+      dockerfile: deployments/Dockerfile
+    depends_on:
+    - mongo
+    ports:
+    - "8080:8080"
+
+  mongo:
+    image: mongo:6.0-jammy
+    ports:
+    - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root 

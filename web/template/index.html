@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/link-icon.svg">
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>GoURL</title>
+</head>
+<body>
+    <header>
+        <h1>GoURL</h1>
+    </header>
+    <div id="form" x-data="{url: null, alias: null}">
+        <input id="url-bar" x-model="url" type="text" name="url" placeholder="Enter your link ...">
+        <div id="custom-path">
+            <span>{{.Domain}}</span>
+            <input x-model="alias" type="text" name="alias" placeholder="Enter a custom alias">
+        </div>
+        {{if .Error}}
+        <div id="error">
+            <span>{{.Error}}</span>
+        </div>
+        {{end}}
+        <button id="shorten-btn" x-on:click="fetch('/shorten', {
+            method: 'POST',
+            body: JSON.stringify({url, alias}),
+            headers: {
+                'Content-Type': 'application/json'
+                }
+        })">Shorten</button>
+    </div>
+</body>
+</html>

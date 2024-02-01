@@ -1,57 +1,107 @@
+/* GENERAL */
 body {
     background-color: #333333;
     background-image: radial-gradient(#000000 0.6000000000000001px, #333333 0.6000000000000001px);
     background-size: 12px 12px;
+    margin:0;
+    font-family: "Karla", ui-sans-serif, sans-serif;
 }
 
-h1 {
+header{
+    margin:32px 0px 32px 0px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+}
+header #title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 12px;
+    height: 4rem;
+}
+#title img {
+    height: inherit;
+}
+#title h1 {
+    font-size:4rem;
+    font-weight: bold;
+    color: white;
+}
+header h2 {
     color: white;
     text-align: center;
 }
 
-#form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 20px;
-}
-
-/* URL BAR */
-#url-bar {
-    width: 70vw;
-    height: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.37);
-    border-radius: 8px;
-    background: #1C1E20;
-    color: white;
-    padding: 0 10px;
-}
-
-/* CUSTOM PATH */
-#custom-path {
-    width:70vw;
+button {
     height:30px;
-    padding:0px 10px;
-    display: flex;
-    align-items: center;
-    background: #1C1E20;
-    color: grey;
-    border: 1px solid rgba(255, 255, 255, 0.37);
-    border-radius: 8px;
-}
-#custom-path input[type=text] {
-    border:none;
-    outline: none;
-    color: white;
-    background-color:transparent;
-}
-#shorten-btn {
-    height:30px;
+    padding: 0px 8px;
     color:white;
     border-radius: 5px;
     border: 1px solid rgba(255, 255, 255, 0.37);
     background-color: #1C1E20;
 }
-#shorten-btn:hover {
-    cursor: pointer
+button:hover {
+    cursor: pointer;
+}
+
+#form {
+    display: flex;
+    flex-direction: column;
+    margin:auto;
+    width:70%;
+    row-gap: 20px;
+}
+
+
+/* URL BAR */
+#url-bar {
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.37);
+    border-radius: 8px;
+    background: #1C1E20;
+    color: white;
+    padding: 0px 10px;
+}
+
+/* ALIAS */
+#alias {
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
+}
+#custom-path {
+    flex-grow: 1;
+    height:30px;
+    padding:0px 8px;
+    display: flex;
+    align-items: center;
+    background: #1C1E20;
+    color: #00ABD7;
+    border: 1px solid rgba(255, 255, 255, 0.37);
+    border-radius: 8px;
+}
+#custom-path input[type=text] {
+    width: 100%;
+    border:none;
+    outline: none;
+    color: white;
+    background-color:transparent;
+}
+#copy-btn {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    padding: 0px 8px;
+}
+
+/* other */
+#shorten-btn{
+    width:min-content;
+    align-self: center;
+}
+
+#error-msg {
+    color: red;
+    text-align: center;
 }

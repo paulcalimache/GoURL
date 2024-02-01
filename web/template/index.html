@@ -3,32 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/static/link-icon.svg">
+    <link rel="icon" type="image/x-icon" href="/static/icons/link-icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/static/index.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="/static/alpinejs@3.13.5.js"></script>
     <title>GoURL</title>
 </head>
 <body>
     <header>
-        <h1>GoURL</h1>
+        <div id="title">
+            <img src="/static/icons/gourl-icon.png">
+            <h1>GoURL</h1>
+        </div>
+        <h2>The simplest URL shortner you were waiting for</h2>
     </header>
-    <div id="form" x-data="{url: null, alias: null}">
+    <div id="form" x-data="{url: null, alias: null, isError: false, error: null}">
         <input id="url-bar" x-model="url" type="text" name="url" placeholder="Enter your link ...">
-        <div id="custom-path">
-            <span>{{.Domain}}</span>
-            <input x-model="alias" type="text" name="alias" placeholder="Enter a custom alias">
+        <div id="alias">
+            <div id="custom-path">
+                <span x-text="window.location.href"></span>
+                <input x-model="alias" type="text" name="alias" placeholder="Enter a custom alias">
+            </div>
+            <button id="copy-btn" x-on:click="navigator.clipboard.writeText(window.location.href+alias)">
+                <img src="/static/icons/copy-icon.svg"/>
+                <span>Copy Link</span>
+            </button>
         </div>
-        {{if .Error}}
-        <div id="error">
-            <span>{{.Error}}</span>
-        </div>
-        {{end}}
+        <span id="error-msg" x-show="isError" x-text="error"></span>
         <button id="shorten-btn" x-on:click="fetch('/shorten', {
             method: 'POST',
             body: JSON.stringify({url, alias}),
             headers: {
                 'Content-Type': 'application/json'
                 }
+        }).then((response) => {
+            isError = !response.ok;
+            error = response.text();
         })">Shorten</button>
     </div>
 </body>

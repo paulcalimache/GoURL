@@ -32,6 +32,7 @@ func NewMongoDB() *MongoDB {
 		log.Fatal().Err(err).Send()
 	}
 	// Check the connection
+	log.Info().Str("mongo_uri", mongoURI).Msg("Trying to connect to the Mongo database...")
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
 		log.Fatal().Err(err).Send()
